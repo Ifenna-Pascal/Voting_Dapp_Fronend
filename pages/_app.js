@@ -1,24 +1,19 @@
 import '../styles/globals.css'
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer , Zoom} from 'react-toastify';
 // import 'styles/globals.css';
 import 'react-toastify/dist/ReactToastify.min.css';
+import {AppProvider} from '../context/appcontext';
 
-function MyApp({ Component, pageProps }) {
-  return <div>
-    <Component {...pageProps} />
-  <ToastContainer
-  position='top-right'
-  autoClose={5000}
-  hideProgressBar={false}
-  newestOnTop={false}
-  closeOnClick
-  rtl={false}
-  pauseOnFocusLoss
-  draggable
-  pauseOnHover
-  theme='light'
-/>
-  </div>
+function MyApp ( { Component, pageProps } )
+{
+  
+  return ( <>
+    <ToastContainer transition={ Zoom } position="top-center" autoClose={ 3000 } />
+    <AppProvider>
+    <Component { ...pageProps } />
+    </AppProvider>
+  </>
+  );
 }
 
 export default MyApp

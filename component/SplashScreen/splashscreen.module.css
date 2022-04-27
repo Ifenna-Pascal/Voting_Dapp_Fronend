@@ -1,0 +1,52 @@
+.splashscreen {
+    height: 150px;
+    width: 150px;
+    background: linear-gradient(rgb(42, 176, 42),
+            rgb(113, 234, 123));
+    position: absolute;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+}
+
+.splashscreen h1{
+    font-size: 4rem;
+    color: white;
+    font-weight: bold;
+}
+
+.splashscreen::before,
+.splashscreen::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: rgb(172, 234, 113);
+    z-index: -1;
+    opacity: 0.7;
+}
+
+.splashscreen::before {
+    animation: pulse 2s ease-out infinite;
+}
+
+.splashscreen::after {
+    animation: pulse 2s 1s ease-out infinite;
+}
+
+.splashscreen>img {
+    width: 50px;
+}
+
+@keyframes pulse {
+    100% {
+        transform: scale(2.5);
+        opacity: '0';
+    }
+}
