@@ -22,5 +22,25 @@ a {
   padding: 2rem 4rem;
   max-width: 1400px;
 }
+.dance{
+  animation: floatY 2s ease-in-out infinite;
+
+}
+
+@keyframes floatY {
+  0% {
+    transform: translatey(0px);
+  }
+
+
+  50% {
+    transform: translatey(20px);
+
+  }
+
+  100% {
+    transform: translatey(0px);
+  }
+}
 
 
