@@ -5,112 +5,93 @@ import
     useContext,
     useState,
     useEffect,
-    useCallback,
 } from "react";
-import
-{
-    connectToMetaMask,
-    listenToAccountChanges,
-    hasEthereum,
-    unmountEthListeners,
-    listenToNetworkChanges,
-} from "../services/web3services";
+import Web3Modal from 'web3modal';
+import { useEthers } from '@usedapp/core';
+import WalletConnectProvider from '@walletconnect/web3-provider';
+
 import { useRouter } from 'next/router';
 const AppContext = createContext();
 
 export function AppProvider ( { children } )
 {
-    const [ isInitiallyFetched, setIsInitiallyFetched ] = useState( false );
-    const [ isConnected, setIsConnected ] = useState( false );
-    const [ hasMetaMask, setHasMetaMask ] = useState( true );
-    const [ address, setAddress ] = useState( false );
-    const router = useRouter();
-
-    const handleWalletConnect = useCallback( () =>
-    {
-        return ( async () =>
-        {
-            const address = await connectToMetaMask();
-            if ( !address )
-            {
-                return toast.error( "Connection Unsuccessful" );
-            } else
-            {
-                toast.success( "Connected to MetaMask" );
-                setIsConnected( true );
-                setAddress( address );
-                localStorage.setItem( "wallet-connection", true );
-                return true;
-            }
-        } )();
-    }, [] );
-
-    const resetValues = useCallback( () =>
-    {
-        return ( async () =>
-        {
-            setIsConnected( true );
-
-            localStorage.setItem( "wallet-connection", true );
-
-            return true;
-        } )();
-    }, [] );
-
-    const handleWalletDisconnect = () =>
-    {
-        setIsConnected( false );
-        localStorage.remove( "wallet-connection" );
-        return toast.error( "Disconnected from MetaMask" );
-    };
-
-    const handleAccountChanged = ( address ) =>
-    {
-        if ( !address ) return handleWalletDisconnect();
-        resetValues();
-    };
-
-    const handleNetworkChanged = () =>
-    {
-        resetValues();
-    };
+    const { account, activate, deactivate, error } = useEthers();
+    const [ activateError, setActivateError ] = useState( '' );
+    const naviate = useRouter();
 
     useEffect( () =>
     {
-        if ( !isInitiallyFetched ) return;
-
-        if ( !hasEthereum() ) return;
-        listenToAccountChanges( handleAccountChanged );
-        listenToNetworkChanges( handleNetworkChanged );
-        return unmountEthListeners();
-    }, [] );
-
-    useEffect( () =>
-    {
-        if ( isInitiallyFetched ) return;
-        if ( !hasEthereum() )
+        if ( error )
         {
-            toast.error( "Please Install Meta Mask" );
-            return setHasMetaMask( false );
+            setActivateError( error.message )
         }
-        const isInjected = localStorage.getItem( "wallet-connection" );
-        if ( !isInjected ) return setIsInitiallyFetched( true );
+    }, [ error ] );
 
-        handleWalletConnect();
-        // isConnected ? router.replace( "/dashboard" ) : router.push( "/" );
-        setIsInitiallyFetched( true );
-        return;
-    }, [ handleWalletConnect, isInitiallyFetched ] );
+    const activateProvider = async () =>
+    {
+        const providerOptions = {
+            injected: {
+                display: {
+                    name: 'Metamask',
+                    description: 'Connect with the provider in your Browser',
+                },
+                package: null,
+            },
+            walletconnect: {
+                package: WalletConnectProvider,
+                options: {
+                    bridge: 'https://bridge.walletconnect.org',
+                    rpc: {
+                        1: "https://mainnet.mycustomnode.com",
+                        3: "https://ropsten.mycustomnode.com",
+                        100: "https://dai.poa.network",
+                        4: "https://rinkeby.mycustomnode.com",
+                        // ...
+                    },
+                    qrcodeModalOptions: {
+                        mobileLinks: [
+                            "rainbow",
+                            "metamask",
+                            "argent",
+                            "trust",
+                            "imtoken",
+                            "pillar",
+                        ],
+                    },
+                },
+            },
+        }
+
+        const web3Modal = new Web3Modal( {
+            providerOptions,
+        } )
+        try
+        {
+            const provider = await web3Modal.connect()
+            await activate( provider );
+            localStorage.setItem( "wallet-connection", true );
+            toast.success( "Connection was Successful" )
+            naviate.push( '/election' );
+            setActivateError( '' )
+        } catch ( error )
+        {
+            setActivateError( error.message )
+        }
+    }
+    async function onDisconnect ()
+    {
+        deactivate()
+        localStorage.removeItem( 'wallet-connection' );
+        toast.warning( "Wallet is Disconnected" );
+    }
 
     return (
         <AppContext.Provider
             value={ {
-                isConnected,
-                setIsConnected,
-                handleWalletConnect,
-                handleWalletDisconnect,
-                hasMetaMask,
-                address,
+                activateProvider,
+                onDisconnect,
+                activateError,
+                account
             } }
         >
             { children }

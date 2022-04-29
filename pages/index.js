@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { SplashScreen } from '../component'
+import { SplashScreen, Header } from '../components'
 
 
 export default function Home ()
@@ -17,10 +17,13 @@ export default function Home ()
             { loading ?
                 <SplashScreen /> // Don't remove this line, it is the SplashScreen Component(Loading Animation)
                 :
-                <div>
-                    This is where all the whole content of the Landing page will be
-                </div>
+                <Header />
+                
             }
+            <div>
+
+               
+            </div>
         </div>
     );
 }
