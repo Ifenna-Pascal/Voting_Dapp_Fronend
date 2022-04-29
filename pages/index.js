@@ -4,24 +4,25 @@ import { SplashScreen, Header } from '../components'
 
 export default function Home ()
 {
-    // const [ loading, setLoading ] = useState( true );
+    const [ loading, setLoading ] = useState( true );
 
-    // useEffect( () =>
-    // {
-    //     setTimeout( () => setLoading( false ), 6000 );
-    // } , []);
+    useEffect( () =>
+    {
+        setTimeout( () => setLoading( false ), 6000 );
+    } , []);
 
     return (
 
         <div>
-            {/* { loading ?
+            { loading ?
                 <SplashScreen /> // Don't remove this line, it is the SplashScreen Component(Loading Animation)
                 :
+                <Header />
                 
-            } */}
+            }
             <div>
 
-                <Header />
+               
             </div>
         </div>
     );
