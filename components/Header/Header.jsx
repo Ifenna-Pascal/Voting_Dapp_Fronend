@@ -41,7 +41,7 @@ export default function Example ()
                     
 
                     </div>
-                <div className="w-full">
+                <div className="w-full dance">
                     <img src="/votingpics1.png" alt="logo" className="" />
                 </div>
             </div>
